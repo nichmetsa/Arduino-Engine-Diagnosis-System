@@ -1,7 +1,6 @@
 #include <Arduino.h>
-#include <Wire.h>
 #include <max6675.h>
-#include <SPI.h>
+#include <LowPower.h>
 //OIL TERMOPAR PINS
 const byte thermoDOoleo = 8;  //VERDE/GREEN-SD
 const byte thermoCSoleo = 7;  //AMARELO/YELLOW-CS
@@ -30,7 +29,7 @@ void setup()
   pinMode(ledR, OUTPUT);
   pinMode(ledG, OUTPUT);
   pinMode(ledY, OUTPUT);
-  pinMode(12, OUTPUT);
+  pinMode(12, OUTPUT); //PIN 12 IS USED AS A 5V SOURCE
   //TO SHOW THAT ALL LEDS ARE WORKING
   digitalWrite(ledR, HIGH);
   digitalWrite(ledG, HIGH);
@@ -40,8 +39,10 @@ void setup()
 void loop()
 {
   digitalWrite(12, HIGH); //USING PIN 12 AS 5V SOURCE FOR MY TERMPOPAR
-  float temperaturaoleo = thermocoupleoleo.readCelsius();;
-  float temperaturacab = thermocouplecab.readCelsius();;
+
+  float temperaturaoleo = thermocoupleoleo.readCelsius();
+  float temperaturacab = thermocouplecab.readCelsius();
+
   Serial.print("oil = ");
   Serial.println(temperaturaoleo);
   Serial.print("cylinder head = ");
@@ -65,5 +66,6 @@ void loop()
     digitalWrite(ledG, HIGH);
     digitalWrite(ledY, LOW);
   }
-  delay(250);
+  delay(180); // i dont know, but there needs to be at least a 180ms delay before sampling with the thermopar
+  LowPower.powerDown(SLEEP_120MS, ADC_OFF, BOD_OFF);
 }
